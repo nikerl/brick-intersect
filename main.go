@@ -3,12 +3,36 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
+const MAX_INT = int(^uint(0) >> 1)
+const REBRICKABLE_API_BASE_URL = "https://rebrickable.com/api/v3/lego/"
+var REBRICKABLE_API_KEY string
+
+type set struct {
+	SetNum 			string `json:"set_num"`
+	Name   			string `json:"name"`
+	SetImgUrl 		string `json:"set_img_url"`
+	BricklinkUrl	string `json:"bricklink_url"`
+}
+
+	
 var colorIdMap = make(map[string]int)
+
+func init_secrets() {
+	data, err := os.ReadFile(".env")
+	if err != nil {
+		log.Fatal("Error reading .env file:", err)
+	}
+	REBRICKABLE_API_KEY = strings.TrimSpace(strings.Split(string(data), "=")[1])
+
+	fmt.Printf("REBRICKABLE_API_KEY: %s\n", REBRICKABLE_API_KEY)
+}
 
 func initializeColorMap() error {
 	data, err := os.ReadFile("static/assets/colors.json")
@@ -36,6 +60,90 @@ func initializeColorMap() error {
 	return nil
 }
 
+func requestSetsContainingPiece(pieceId string, colorId int) []set {
+	client := &http.Client{}
+
+	req, _ := http.NewRequest("GET", fmt.Sprintf("%sparts/%s/colors/%d/sets/?page_size=10000", REBRICKABLE_API_BASE_URL, pieceId, colorId), nil)
+	req.Header.Add("Authorization", fmt.Sprintf("key %s", REBRICKABLE_API_KEY))
+
+	respJson, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error fetching sets for piece %s and color %d: %v", pieceId, colorId, err)
+		return nil
+	}
+	defer respJson.Body.Close()
+
+	// Process the response body as needed
+	body, err := io.ReadAll(respJson.Body)
+	if err != nil {
+		log.Printf("Error reading response body for piece %s and color %d: %v", pieceId, colorId, err)
+		return nil
+	}
+
+	var resp struct {
+		Results []set `json:"results"`
+	}
+
+	if err := json.Unmarshal(body, &resp); err != nil {
+		log.Printf("unmarshal error: %v", err)
+	}
+	sets := resp.Results
+
+	for i := range sets {
+		sets[i].BricklinkUrl = fmt.Sprintf("https://www.bricklink.com/v2/catalog/catalogitem.page?S=%s", sets[i].SetNum)
+	}
+
+	return sets
+}
+
+func containsSetNum(sets []set, setNum string) bool {
+	for _, s := range sets {
+		if s.SetNum == setNum {
+			return true
+		}
+	}
+	return false
+}
+
+func setIntersection(superset [][]set) []set {
+	if len(superset) == 0 {
+		return nil
+	} else if len(superset) == 1 {
+		return superset[0]
+	}
+
+	min_len := MAX_INT
+	min_len_index := 0
+	for i := range superset {
+		if len(superset[i]) < min_len {
+			min_len = len(superset[i])
+			min_len_index = i
+		}
+	}
+	
+	var intersection []set
+	for i := range superset[min_len_index] {
+		setNum := superset[min_len_index][i].SetNum
+		foundInAll := true
+		for j := range superset {
+			if j == min_len_index {
+				continue
+			}
+			if !containsSetNum(superset[j], setNum) {
+				foundInAll = false
+				break
+			}
+		}
+		if foundInAll {
+			fmt.Printf("Set %s is in all sets\n", setNum)
+			intersection = append(intersection, superset[min_len_index][i])
+		}
+	}
+
+	return intersection
+}
+
+
 func queryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		fmt.Fprintf(w, "ParseForm() err: %v\n", err)
@@ -46,13 +154,22 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	piece_ids := r.Form["piece_ids"]
 	colors := r.Form["colors"]
 
+	var sets [][]set
 	for i := range piece_ids {
 		fmt.Printf("Piece ID: %s, Color: %s, Color ID: %d\n", piece_ids[i], colors[i], colorIdMap[colors[i]])
+		setsWithPiece := requestSetsContainingPiece(piece_ids[i], colorIdMap[colors[i]])
+		sets = append(sets, setsWithPiece)
 	}
+
+	intersection := setIntersection(sets)
+	fmt.Printf("Intersection: %v\n", intersection)
+
 
 }
 
 func main() {
+	init_secrets()
+	
 	if err := initializeColorMap(); err != nil {
 		log.Fatal(err)
 	}
