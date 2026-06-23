@@ -1,0 +1,72 @@
+.row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.piece-id-field {
+	width: 150px;
+}
+
+.color-field-container {
+	position: relative;
+	display: inline-flex;
+	flex-direction: column;
+	width: 200px;
+	margin-left: 8px;
+}
+
+.color-input {
+	width: 100%;
+}
+
+.suggestions {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	border: 1px solid #ccc;
+	background: #fff;
+	z-index: 10;
+	display: none;
+	max-height: 180px;
+	overflow-y: auto;
+	min-height: 32px;
+}
+
+.suggestions.open {
+	display: block;
+}
+
+.suggestion-item {
+	width: 100%;
+	border: 0;
+	background: transparent;
+	text-align: left;
+	padding: 6px 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.color-preview {
+	width: 16px;
+	height: 16px;
+	border: 1px solid #999;
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+.suggestion-item:hover {
+	background: #e8f0fe;
+}
+
+.suggestion-item.active {
+	background: #d2e3fc;
+}
+
+.suggestion-item.empty {
+	cursor: default;
+	color: #666;
+}

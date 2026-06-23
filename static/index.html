@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BrickIntersect</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="app.js" defer></script>
+</head>
+
+<body>
+	<div>
+		<form method="POST" action="/query" id="piece-form">
+			<div id="rows-container">
+				<div class="row">
+					<input class="piece-id-field" name="piece_ids" type="number" placeholder="Piece ID" required
+						autocomplete="off">
+					<div class="color-field-container">
+						<input class="color-input" name="colors" type="text" placeholder="Color" required
+							autocomplete="off">
+						<div class="suggestions" role="listbox" aria-label="Suggestions"></div>
+					</div>
+					<button type="button" class="remove-row" style="margin-left: 8px;">X</button>
+				</div>
+			</div>
+			<button type="button" id="add-row">Add Row</button>
+			<input type="submit" value="submit" style="display: block; margin-top: 16px;">
+		</form>
+	</div>
+</body>
+
+</html>

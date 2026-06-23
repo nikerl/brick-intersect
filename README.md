@@ -1,1 +1,1 @@
-# brick-intersect
+# BrickIntersect

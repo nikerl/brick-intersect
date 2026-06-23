@@ -1,0 +1,499 @@
+{
+    "colors": [
+        {
+            "id": 0,
+            "name": "Black",
+            "rgb": "05131D"
+        },
+        {
+            "id": 1,
+            "name": "Blue",
+            "rgb": "0055BF"
+        },
+        {
+            "id": 2,
+            "name": "Green",
+            "rgb": "237841"
+        },
+        {
+            "id": 3,
+            "name": "Dark Turquoise",
+            "rgb": "008F9B"
+        },
+        {
+            "id": 4,
+            "name": "Red",
+            "rgb": "C91A09"
+        },
+        {
+            "id": 5,
+            "name": "Dark Pink",
+            "rgb": "C870A0"
+        },
+        {
+            "id": 6,
+            "name": "Brown",
+            "rgb": "583927"
+        },
+        {
+            "id": 7,
+            "name": "Light Gray",
+            "rgb": "9BA19D"
+        },
+        {
+            "id": 8,
+            "name": "Dark Gray",
+            "rgb": "6D6E5C"
+        },
+        {
+            "id": 9,
+            "name": "Light Blue",
+            "rgb": "B4D2E3"
+        },
+        {
+            "id": 10,
+            "name": "Bright Green",
+            "rgb": "4B9F4A"
+        },
+        {
+            "id": 11,
+            "name": "Light Turquoise",
+            "rgb": "55A5AF"
+        },
+        {
+            "id": 12,
+            "name": "Salmon",
+            "rgb": "F2705E"
+        },
+        {
+            "id": 13,
+            "name": "Pink",
+            "rgb": "FC97AC"
+        },
+        {
+            "id": 14,
+            "name": "Yellow",
+            "rgb": "F2CD37"
+        },
+        {
+            "id": 15,
+            "name": "White",
+            "rgb": "FFFFFF"
+        },
+        {
+            "id": 17,
+            "name": "Light Green",
+            "rgb": "C2DAB8"
+        },
+        {
+            "id": 18,
+            "name": "Light Yellow",
+            "rgb": "FBE696"
+        },
+        {
+            "id": 19,
+            "name": "Tan",
+            "rgb": "E4CD9E"
+        },
+        {
+            "id": 20,
+            "name": "Light Violet",
+            "rgb": "C9CAE2"
+        },
+        {
+            "id": 21,
+            "name": "Glow In Dark Opaque",
+            "rgb": "D4D5C9"
+        },
+        {
+            "id": 22,
+            "name": "Purple",
+            "rgb": "81007B"
+        },
+        {
+            "id": 23,
+            "name": "Dark Blue-Violet",
+            "rgb": "2032B0"
+        },
+        {
+            "id": 25,
+            "name": "Orange",
+            "rgb": "FE8A18"
+        },
+        {
+            "id": 26,
+            "name": "Magenta",
+            "rgb": "923978"
+        },
+        {
+            "id": 27,
+            "name": "Lime",
+            "rgb": "BBE90B"
+        },
+        {
+            "id": 28,
+            "name": "Dark Tan",
+            "rgb": "958A73"
+        },
+        {
+            "id": 29,
+            "name": "Bright Pink",
+            "rgb": "E4ADC8"
+        },
+        {
+            "id": 30,
+            "name": "Medium Lavender",
+            "rgb": "AC78BA"
+        },
+        {
+            "id": 31,
+            "name": "Lavender",
+            "rgb": "E1D5ED"
+        },
+        {
+            "id": 32,
+            "name": "Trans-Black IR Lens",
+            "rgb": "635F52"
+        },
+        {
+            "id": 33,
+            "name": "Trans-Dark Blue",
+            "rgb": "0020A0"
+        },
+        {
+            "id": 34,
+            "name": "Trans-Green",
+            "rgb": "84B68D"
+        },
+        {
+            "id": 35,
+            "name": "Trans-Bright Green",
+            "rgb": "D9E4A7"
+        },
+        {
+            "id": 36,
+            "name": "Trans-Red",
+            "rgb": "C91A09"
+        },
+        {
+            "id": 40,
+            "name": "Trans-Brown",
+            "rgb": "635F52"
+        },
+        {
+            "id": 41,
+            "name": "Trans-Light Blue",
+            "rgb": "AEEFEC"
+        },
+        {
+            "id": 42,
+            "name": "Trans-Neon Green",
+            "rgb": "F8F184"
+        },
+        {
+            "id": 43,
+            "name": "Trans-Very Lt Blue",
+            "rgb": "C1DFF0"
+        },
+        {
+            "id": 45,
+            "name": "Trans-Dark Pink",
+            "rgb": "DF6695"
+        },
+        {
+            "id": 46,
+            "name": "Trans-Yellow",
+            "rgb": "F5CD2F"
+        },
+        {
+            "id": 47,
+            "name": "Trans-Clear",
+            "rgb": "FCFCFC"
+        },
+        {
+            "id": 52,
+            "name": "Trans-Purple",
+            "rgb": "A5A5CB"
+        },
+        {
+            "id": 54,
+            "name": "Trans-Neon Yellow",
+            "rgb": "DAB000"
+        },
+        {
+            "id": 57,
+            "name": "Trans-Neon Orange",
+            "rgb": "FF800D"
+        },
+        {
+            "id": 60,
+            "name": "Chrome Antique Brass",
+            "rgb": "645A4C"
+        },
+        {
+            "id": 61,
+            "name": "Chrome Blue",
+            "rgb": "6C96BF"
+        },
+        {
+            "id": 62,
+            "name": "Chrome Green",
+            "rgb": "3CB371"
+        },
+        {
+            "id": 63,
+            "name": "Chrome Pink",
+            "rgb": "AA4D8E"
+        },
+        {
+            "id": 64,
+            "name": "Chrome Black",
+            "rgb": "1B2A34"
+        },
+        {
+            "id": 68,
+            "name": "Very Light Orange",
+            "rgb": "F3CF9B"
+        },
+        {
+            "id": 69,
+            "name": "Light Purple",
+            "rgb": "CD6298"
+        },
+        {
+            "id": 70,
+            "name": "Reddish Brown",
+            "rgb": "582A12"
+        },
+        {
+            "id": 71,
+            "name": "Light Bluish Gray",
+            "rgb": "A0A5A9"
+        },
+        {
+            "id": 72,
+            "name": "Dark Bluish Gray",
+            "rgb": "6C6E68"
+        },
+        {
+            "id": 73,
+            "name": "Medium Blue",
+            "rgb": "5A93DB"
+        },
+        {
+            "id": 74,
+            "name": "Medium Green",
+            "rgb": "73DCA1"
+        },
+        {
+            "id": 75,
+            "name": "Speckle Black-Copper",
+            "rgb": "05131D"
+        },
+        {
+            "id": 76,
+            "name": "Speckle DBGray-Silver",
+            "rgb": "6C6E68"
+        },
+        {
+            "id": 77,
+            "name": "Light Pink",
+            "rgb": "FECCCF"
+        },
+        {
+            "id": 78,
+            "name": "Light Nougat",
+            "rgb": "F6D7B3"
+        },
+        {
+            "id": 79,
+            "name": "Milky White",
+            "rgb": "FFFFFF"
+        },
+        {
+            "id": 80,
+            "name": "Metallic Silver",
+            "rgb": "A5A9B4"
+        },
+        {
+            "id": 81,
+            "name": "Metallic Green",
+            "rgb": "899B5F"
+        },
+        {
+            "id": 82,
+            "name": "Metallic Gold",
+            "rgb": "DBAC34"
+        },
+        {
+            "id": 84,
+            "name": "Medium Nougat",
+            "rgb": "AA7D55"
+        },
+        {
+            "id": 85,
+            "name": "Dark Purple",
+            "rgb": "3F3691"
+        },
+        {
+            "id": 86,
+            "name": "Light Brown",
+            "rgb": "7C503A"
+        },
+        {
+            "id": 89,
+            "name": "Royal Blue",
+            "rgb": "4C61DB"
+        },
+        {
+            "id": 92,
+            "name": "Nougat",
+            "rgb": "D09168"
+        },
+        {
+            "id": 100,
+            "name": "Light Salmon",
+            "rgb": "FEBABD"
+        },
+        {
+            "id": 110,
+            "name": "Violet",
+            "rgb": "4354A3"
+        },
+        {
+            "id": 112,
+            "name": "Medium Bluish Violet",
+            "rgb": "6874CA"
+        },
+        {
+            "id": 114,
+            "name": "Glitter Trans-Dark Pink",
+            "rgb": "DF6695"
+        },
+        {
+            "id": 115,
+            "name": "Medium Lime",
+            "rgb": "C7D23C"
+        },
+        {
+            "id": 117,
+            "name": "Glitter Trans-Clear",
+            "rgb": "FFFFFF"
+        },
+        {
+            "id": 118,
+            "name": "Aqua",
+            "rgb": "B3D7D1"
+        },
+        {
+            "id": 120,
+            "name": "Light Lime",
+            "rgb": "D9E4A7"
+        },
+        {
+            "id": 125,
+            "name": "Light Orange",
+            "rgb": "F9BA61"
+        },
+        {
+            "id": 129,
+            "name": "Glitter Trans-Purple",
+            "rgb": "A5A5CB"
+        },
+        {
+            "id": 132,
+            "name": "Speckle Black-Silver",
+            "rgb": "05131D"
+        },
+        {
+            "id": 133,
+            "name": "Speckle Black-Gold",
+            "rgb": "05131D"
+        },
+        {
+            "id": 134,
+            "name": "Copper",
+            "rgb": "AE7A59"
+        },
+        {
+            "id": 135,
+            "name": "Pearl Light Gray",
+            "rgb": "9CA3A8"
+        },
+        {
+            "id": 137,
+            "name": "Pearl Sand Blue",
+            "rgb": "7988A1"
+        },
+        {
+            "id": 142,
+            "name": "Pearl Light Gold",
+            "rgb": "DCBC81"
+        },
+        {
+            "id": 143,
+            "name": "Trans-Medium Blue",
+            "rgb": "CFE2F7"
+        },
+        {
+            "id": 148,
+            "name": "Pearl Dark Gray",
+            "rgb": "575857"
+        },
+        {
+            "id": 150,
+            "name": "Pearl Very Light Gray",
+            "rgb": "ABADAC"
+        },
+        {
+            "id": 151,
+            "name": "Very Light Bluish Gray",
+            "rgb": "E6E3E0"
+        },
+        {
+            "id": 158,
+            "name": "Yellowish Green",
+            "rgb": "DFEEA5"
+        },
+        {
+            "id": 178,
+            "name": "Flat Dark Gold",
+            "rgb": "B48455"
+        },
+        {
+            "id": 179,
+            "name": "Flat Silver",
+            "rgb": "898788"
+        },
+        {
+            "id": 182,
+            "name": "Trans-Orange",
+            "rgb": "F08F1C"
+        },
+        {
+            "id": 183,
+            "name": "Pearl White",
+            "rgb": "F2F3F2"
+        },
+        {
+            "id": 191,
+            "name": "Bright Light Orange",
+            "rgb": "F8BB3D"
+        },
+        {
+            "id": 212,
+            "name": "Bright Light Blue",
+            "rgb": "9FC3E9"
+        },
+        {
+            "id": 216,
+            "name": "Rust",
+            "rgb": "B31004"
+        },
+        {
+            "id": 226,
+            "name": "Bright Light Yellow",
+            "rgb": "FFF03A"
+        }
+    ]
+}
