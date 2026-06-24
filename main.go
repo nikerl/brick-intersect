@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -14,24 +15,27 @@ const MAX_INT = int(^uint(0) >> 1)
 const REBRICKABLE_API_BASE_URL = "https://rebrickable.com/api/v3/lego/"
 var REBRICKABLE_API_KEY string
 
+var resultTemplate *template.Template
+
 type set struct {
-	SetNum 			string `json:"set_num"`
-	Name   			string `json:"name"`
-	SetImgUrl 		string `json:"set_img_url"`
-	BricklinkUrl	string `json:"bricklink_url"`
+	SetNum       string `json:"set_num"`
+	Name         string `json:"name"`
+	SetImgUrl    string `json:"set_img_url"`
+	BricklinkUrl string `json:"bricklink_url"`
 }
 
-	
 var colorIdMap = make(map[string]int)
 
-func init_secrets() {
+func initSecrets() {
 	data, err := os.ReadFile(".env")
 	if err != nil {
 		log.Fatal("Error reading .env file:", err)
 	}
 	REBRICKABLE_API_KEY = strings.TrimSpace(strings.Split(string(data), "=")[1])
+}
 
-	fmt.Printf("REBRICKABLE_API_KEY: %s\n", REBRICKABLE_API_KEY)
+func initTemplate() {
+	resultTemplate = template.Must(template.ParseFiles("static/query.html"))
 }
 
 func initializeColorMap() error {
@@ -120,7 +124,7 @@ func setIntersection(superset [][]set) []set {
 			min_len_index = i
 		}
 	}
-	
+
 	var intersection []set
 	for i := range superset[min_len_index] {
 		setNum := superset[min_len_index][i].SetNum
@@ -135,14 +139,13 @@ func setIntersection(superset [][]set) []set {
 			}
 		}
 		if foundInAll {
-			fmt.Printf("Set %s is in all sets\n", setNum)
+			fmt.Printf("Set %s contains all pieces\n", setNum)
 			intersection = append(intersection, superset[min_len_index][i])
 		}
 	}
 
 	return intersection
 }
-
 
 func queryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
@@ -164,12 +167,14 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	intersection := setIntersection(sets)
 	fmt.Printf("Intersection: %v\n", intersection)
 
+	resultTemplate.Execute(w, intersection)
 
 }
 
 func main() {
-	init_secrets()
-	
+	initSecrets()
+	initTemplate()
+
 	if err := initializeColorMap(); err != nil {
 		log.Fatal(err)
 	}
