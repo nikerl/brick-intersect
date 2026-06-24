@@ -67,7 +67,7 @@ func initializeColorMap() error {
 func requestSetsContainingPiece(pieceId string, colorId int) []set {
 	client := &http.Client{}
 
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%sparts/%s/colors/%d/sets/?page_size=10000", REBRICKABLE_API_BASE_URL, pieceId, colorId), nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("%sparts/%s/colors/%d/sets/?page_size=10000&ordering=set_num", REBRICKABLE_API_BASE_URL, pieceId, colorId), nil)
 	req.Header.Add("Authorization", fmt.Sprintf("key %s", REBRICKABLE_API_KEY))
 
 	respJson, err := client.Do(req)
@@ -77,7 +77,6 @@ func requestSetsContainingPiece(pieceId string, colorId int) []set {
 	}
 	defer respJson.Body.Close()
 
-	// Process the response body as needed
 	body, err := io.ReadAll(respJson.Body)
 	if err != nil {
 		log.Printf("Error reading response body for piece %s and color %d: %v", pieceId, colorId, err)
@@ -100,15 +99,26 @@ func requestSetsContainingPiece(pieceId string, colorId int) []set {
 	return sets
 }
 
+// Binary search to find if a setNum existsin in a list of sets
 func containsSetNum(sets []set, setNum string) bool {
-	for _, s := range sets {
-		if s.SetNum == setNum {
+	var l int = 0
+	var r int = len(sets) - 1
+	for l <= r {
+		var m int = l + ((r - l) / 2)
+		var currentSetNum string = sets[m].SetNum
+		if currentSetNum < setNum {
+			l = m + 1
+		} else if currentSetNum > setNum {
+			r = m - 1
+		} else {
 			return true
 		}
-	}
+	} 
+
 	return false
 }
 
+// Finds which sets appear in all provided set lists
 func setIntersection(superset [][]set) []set {
 	if len(superset) == 0 {
 		return nil
@@ -116,6 +126,7 @@ func setIntersection(superset [][]set) []set {
 		return superset[0]
 	}
 
+	// Find the shortest of the lists of sets
 	min_len := MAX_INT
 	min_len_index := 0
 	for i := range superset {
@@ -182,7 +193,7 @@ func main() {
 	fileserver := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileserver)
 	http.HandleFunc("/query", queryHandler)
-	fmt.Printf("Starting server at http://localhost:8090\n")
+	fmt.Printf("Starting server at http://0.0.0.0:8090\n")
 
 	if err := http.ListenAndServe(":8090", nil); err != nil {
 		log.Fatal(err)
