@@ -11,11 +11,14 @@
 </head>
 
 <body>
+	<h1><img src="assets/favicon.png" style="display: inline-block; vertical-align: -0.3em; height: 1.3em; margin-right: 10px;">BrickIntersect</h1>
+	<p>Enter 2–4 pieces with their numbers and colors to get a list of the sets that contain all pieces.</p>
+	<p>Note: This tool works best with less common pieces, and not all colors are available</p>
 	<div>
 		<form method="POST" action="/query" id="piece-form">
 			<div id="rows-container">
 				<div class="row">
-					<input class="piece-id-field" name="piece_ids" type="number" placeholder="Piece ID" required
+					<input class="piece-id-field" name="piece_ids" type="number" placeholder="Piece Num" required
 						autocomplete="off">
 					<div class="color-field-container">
 						<input class="color-input" name="colors" type="text" placeholder="Color" required
