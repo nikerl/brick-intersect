@@ -1,248 +1,139 @@
-const form = document.getElementById('piece-form');
-const rowsContainer = document.getElementById('rows-container');
-const addRowBtn = document.getElementById('add-row');
-
 let colorOptions = [];
-let formInitialized = false;
 
-// Fetch color options directly from static JSON
 fetch('/assets/colors.json')
-	.then(response => {
-		console.log('Response status:', response.status);
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return response.json();
-	})
+	.then(r => r.json())
 	.then(data => {
-		console.log('Loaded colors:', data);
 		colorOptions = Array.isArray(data?.colors) ? data.colors : data;
-		initializeForm();
-	})
-	.catch(error => {
-		console.error('Error loading colors:', error);
-		console.error('Error details:', error.message);
-		colorOptions = [
-			{ name: 'Option A', rgb: 'FF0000' },
-			{ name: 'Test', rgb: '00FF00' },
-			{ name: 'sosserier', rgb: '0000FF' }
-		]; // Fallback
-		initializeForm();
+		document.querySelectorAll('.row').forEach(initRow);
 	});
 
-function initializeForm() {
-	if (formInitialized) return;
-	formInitialized = true;
+document.getElementById('add-row').addEventListener('click', () => {
+	const container = document.getElementById('rows-container');
+	const row = container.querySelector('.row').cloneNode(true);
+	row.querySelector('.piece-id-field').value = '';
+	row.querySelector('.color-input').value = '';
+	row.querySelector('.suggestions').innerHTML = '';
+	row.querySelector('.suggestions').classList.remove('open');
+	container.appendChild(row);
+	initRow(row);
+});
 
-	// Initialize existing rows
-	document.querySelectorAll('.row').forEach(initRow);
-
-	// Add new row button
-	addRowBtn.addEventListener('click', () => {
-		const defaultRow = rowsContainer.querySelector('.row');
-		const newRow = defaultRow.cloneNode(true);
-		newRow.querySelector('.piece-id-field').value = '';
-		newRow.querySelector('.color-input').value = '';
-		newRow.querySelector('.suggestions').innerHTML = '';
-		newRow.querySelector('.suggestions').classList.remove('open');
-		rowsContainer.appendChild(newRow);
-		initRow(newRow);
-	});
-
-	// Form submit handler
-	form.addEventListener('submit', (event) => {
-		const colorInputs = form.querySelectorAll('.color-input');
-		let isValid = true;
-		colorInputs.forEach(input => {
-			if (!colorOptions.some(option => option.name === input.value)) {
-				input.setCustomValidity('Choose a valid color format from suggestions');
-				input.reportValidity();
-				isValid = false;
-			}
-		});
-		if (!isValid) {
-			event.preventDefault();
+document.getElementById('piece-form').addEventListener('submit', e => {
+	for (const input of e.target.querySelectorAll('.color-input')) {
+		if (!colorOptions.some(o => o.name === input.value)) {
+			input.setCustomValidity('Choose a valid color from suggestions');
+			input.reportValidity();
+			e.preventDefault();
+			return;
 		}
-	});
-}
+	}
+});
 
+function matchingColors(value) {
+	const q = value.trim().toLowerCase();
+	if (!q) return colorOptions;
 
-function getMatchingOptions(value) {
-	const normalizedValue = value.trim().toLowerCase();
-	if (!normalizedValue) return colorOptions;
-
-	// Sort matches by relevance: exact match > starts with > contains
-	const matches = colorOptions.filter((option) => {
-		const optionName = option.name.toLowerCase();
-		return optionName.includes(normalizedValue);
-	});
-
-	matches.sort((a, b) => {
-		const aName = a.name.toLowerCase();
-		const bName = b.name.toLowerCase();
-
-		// Exact match
-		if (aName === normalizedValue) return -1;
-		if (bName === normalizedValue) return 1;
-
-		// Starts with
-		if (aName.startsWith(normalizedValue) && !bName.startsWith(normalizedValue)) return -1;
-		if (bName.startsWith(normalizedValue) && !aName.startsWith(normalizedValue)) return 1;
-
-		// Both start with or both don't, sort alphabetically
-		return aName.localeCompare(bName);
-	});
-
-	return matches;
+	return colorOptions
+		.filter(o => o.name.toLowerCase().includes(q))
+		.sort((a, b) => {
+			const [an, bn] = [a.name.toLowerCase(), b.name.toLowerCase()];
+			if (an === q) return -1;
+			if (bn === q) return 1;
+			if (an.startsWith(q) !== bn.startsWith(q)) return an.startsWith(q) ? -1 : 1;
+			return an.localeCompare(bn);
+		});
 }
 
 function initRow(row) {
-	const colorInput = row.querySelector('.color-input');
-	const suggestionBox = row.querySelector('.suggestions');
-	const removeBtn = row.querySelector('.remove-row');
+	const input = row.querySelector('.color-input');
+	const box = row.querySelector('.suggestions');
 	let activeIndex = -1;
 
-	removeBtn.addEventListener('click', () => {
-		if (rowsContainer.children.length > 1) {
-			row.remove();
-		}
+	row.querySelector('.remove-row').addEventListener('click', () => {
+		const container = document.getElementById('rows-container');
+		if (container.children.length > 1) row.remove();
 	});
 
-	function validateInput() {
-		const value = colorInput.value.trim();
-
-		// Allow empty values while the user is navigating fields; required validation
-		// will still run on submit.
-		if (!value) {
-			colorInput.setCustomValidity('');
-			return true;
-		}
-
-		const isValid = colorOptions.some(option => option.name === value);
-		colorInput.setCustomValidity(isValid ? '' : 'Choose a valid color from suggestions');
-		return isValid;
+	function validate() {
+		const valid = !input.value.trim() || colorOptions.some(o => o.name === input.value.trim());
+		input.setCustomValidity(valid ? '' : 'Choose a valid color from suggestions');
+		return valid;
 	}
 
-	function reportInvalidInput() {
-		const value = colorInput.value.trim();
-		const isValid = validateInput();
-
-		// Do not force focus back when the field is empty.
-		if (value && !isValid) {
-			colorInput.reportValidity();
-		}
+	function highlight(index) {
+		activeIndex = index;
+		box.querySelectorAll('.suggestion-item:not(.empty)').forEach((el, i) => {
+			el.classList.toggle('active', i === index);
+			if (i === index) el.scrollIntoView({ block: 'nearest' });
+		});
 	}
 
-	function closeSuggestions() {
-		suggestionBox.classList.remove('open');
-	}
-
-	function renderSuggestions() {
-		const matches = getMatchingOptions(colorInput.value);
-		suggestionBox.innerHTML = '';
+	function render() {
+		const matches = matchingColors(input.value);
+		box.innerHTML = '';
 		activeIndex = -1;
 
 		if (!matches.length) {
-			const emptyState = document.createElement('button');
-			emptyState.type = 'button';
-			emptyState.className = 'suggestion-item empty';
-			emptyState.textContent = 'No matches';
-			emptyState.disabled = true;
-			suggestionBox.appendChild(emptyState);
+			const el = document.createElement('button');
+			el.type = 'button';
+			el.className = 'suggestion-item empty';
+			el.textContent = 'No matches';
+			el.disabled = true;
+			box.appendChild(el);
 		}
 
-		matches.forEach((option, index) => {
+		matches.forEach((option, i) => {
 			const item = document.createElement('button');
 			item.type = 'button';
 			item.className = 'suggestion-item';
-			item.dataset.index = index;
 
-			// Create color preview
 			const preview = document.createElement('div');
 			preview.className = 'color-preview';
 			preview.style.backgroundColor = '#' + option.rgb;
 
-			// Create text span
 			const text = document.createElement('span');
 			text.textContent = option.name;
 
-			item.appendChild(preview);
-			item.appendChild(text);
-
-			item.addEventListener('mousedown', (event) => {
-				event.preventDefault();
-				colorInput.value = option.name;
-				validateInput();
-				closeSuggestions();
+			item.append(preview, text);
+			item.addEventListener('mousedown', e => {
+				e.preventDefault();
+				input.value = option.name;
+				validate();
+				box.classList.remove('open');
 			});
-
-			item.addEventListener('mouseover', () => {
-				setActiveIndex(index);
-			});
-
-			suggestionBox.appendChild(item);
+			item.addEventListener('mouseover', () => highlight(i));
+			box.appendChild(item);
 		});
 
-		suggestionBox.classList.add('open');
+		box.classList.add('open');
 	}
 
-	function setActiveIndex(index) {
-		activeIndex = index;
-		const items = suggestionBox.querySelectorAll('.suggestion-item:not(.empty)');
-		items.forEach((item, i) => {
-			if (i === index) {
-				item.classList.add('active');
-			} else {
-				item.classList.remove('active');
-			}
-		});
-	}
-
-	colorInput.addEventListener('focus', renderSuggestions);
-	colorInput.addEventListener('input', () => {
-		validateInput();
-		renderSuggestions();
-	});
-	colorInput.addEventListener('blur', () => {
-		window.setTimeout(() => {
-			closeSuggestions();
-			reportInvalidInput();
+	input.addEventListener('focus', render);
+	input.addEventListener('input', () => { validate(); render(); });
+	input.addEventListener('blur', () => {
+		setTimeout(() => {
+			box.classList.remove('open');
+			if (input.value.trim() && !validate()) input.reportValidity();
 		}, 150);
 	});
-	colorInput.addEventListener('keydown', (event) => {
-		const matches = getMatchingOptions(colorInput.value);
-		const items = suggestionBox.querySelectorAll('.suggestion-item:not(.empty)');
+	input.addEventListener('keydown', e => {
+		const matches = matchingColors(input.value);
+		const items = box.querySelectorAll('.suggestion-item:not(.empty)');
 
-		if (event.key === 'ArrowDown') {
-			event.preventDefault();
-			if (!suggestionBox.classList.contains('open')) {
-				renderSuggestions();
-			}
-			setActiveIndex(Math.min(activeIndex + 1, items.length - 1));
-		} else if (event.key === 'ArrowUp') {
-			event.preventDefault();
-			if (activeIndex > 0) {
-				setActiveIndex(activeIndex - 1);
-			}
-		} else if (event.key === 'Enter') {
-			event.preventDefault();
-
-			let selectedOption;
-			if (activeIndex >= 0 && activeIndex < matches.length) {
-				selectedOption = matches[activeIndex];
-			} else {
-				selectedOption = matches[0];
-			}
-
-			if (!selectedOption) {
-				reportInvalidInput();
-				return;
-			}
-
-			colorInput.value = selectedOption.name;
-			validateInput();
-			closeSuggestions();
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			if (!box.classList.contains('open')) render();
+			highlight(Math.min(activeIndex + 1, items.length - 1));
+		} else if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			if (activeIndex > 0) highlight(activeIndex - 1);
+		} else if (e.key === 'Enter') {
+			e.preventDefault();
+			const selected = activeIndex >= 0 ? matches[activeIndex] : matches[0];
+			if (!selected) { if (input.value.trim()) input.reportValidity(); return; }
+			input.value = selected.name;
+			validate();
+			box.classList.remove('open');
 		}
 	});
 }
-
