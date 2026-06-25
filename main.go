@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -136,8 +137,14 @@ func setIntersection(superset [][]set) []set {
 		}
 	}
 
+	// Filter out sets with 500XXXX numbers
+	var legoSetRe = regexp.MustCompile(`\b500\d{4}(?:-\d+)?\b`)
+
 	var intersection []set
 	for i := range superset[min_len_index] {
+		if legoSetRe.MatchString(superset[min_len_index][i].SetNum) {
+			continue
+		}
 		setNum := superset[min_len_index][i].SetNum
 		foundInAll := true
 		for j := range superset {
