@@ -8,3 +8,4 @@ The API key should be listed in `.env` file in the root of the repo as such:
 ```
 REBRICKABLE_API_KEY=<key>
 ```
+Or export it as an eviroment variable before running the program.

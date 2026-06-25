@@ -28,11 +28,20 @@ type set struct {
 var colorIdMap = make(map[string]int)
 
 func initSecrets() {
-	data, err := os.ReadFile(".env")
-	if err != nil {
-		log.Fatal("Error reading .env file:", err)
+	// Check if environment variable is set
+	if apiKey := os.Getenv("REBRICKABLE_API_KEY"); apiKey != "" {
+		fmt.Println("Using REBRICKABLE_API_KEY from environment variable")
+		REBRICKABLE_API_KEY = apiKey
+		return
+	} else {
+		// Else, read from .env file
+		fmt.Println("Using REBRICKABLE_API_KEY from .env file")
+		data, err := os.ReadFile(".env")
+		if err != nil {
+			log.Fatal("Error reading .env file:", err)
+		}
+		REBRICKABLE_API_KEY = strings.TrimSpace(strings.Split(string(data), "=")[1])
 	}
-	REBRICKABLE_API_KEY = strings.TrimSpace(strings.Split(string(data), "=")[1])
 }
 
 func initTemplate() {
