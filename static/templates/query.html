@@ -14,7 +14,11 @@
 	<div class="container">
 		<div class="page-content">
 			<h1><img src="assets/favicon.png">BrickIntersect</h1>
-			<h2>Results</h2>
+			<div class="results-header">
+				<h2>Results</h2>
+				<button class="btn-primary" onclick="history.back()">Back</button>
+			</div>
+			<br>
 			<div class="results-grid">
 				{{range .}}
 				<div class="result-card">
@@ -27,6 +31,5 @@
 			</div>
 		</div>
 	</div>
-	
 </body>
 </html>

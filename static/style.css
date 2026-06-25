@@ -74,6 +74,8 @@ button:hover {
 }
 
 .btn-primary {
+	display: inline-block;
+	text-decoration: none;
 	border: 1px solid #666666;
 	background: #9C27B0;
 	color: #fff;
@@ -82,6 +84,7 @@ button:hover {
 	font-weight: 600;
 	border-radius: 6px;
 	width: 150px;
+	cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -176,10 +179,25 @@ button:hover {
 
 /* Results */
 
+.results-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.results-header h2 {
+	margin: 0;
+}
+
 .results-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 32px;
+}
+
+.result-card {
+	min-width: 0;
 }
 
 .result-card a {
