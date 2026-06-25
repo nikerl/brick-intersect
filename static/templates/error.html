@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Error {{.StatusCode}}</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="app.js" defer></script>
+	<link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+
+<body>
+	<div class="container">
+		<div class="page-content">
+			<h1><img src="assets/favicon.png">BrickIntersect</h1>
+			<h2>Error {{.StatusCode}}: {{.Title}}</h2>
+            <p>{{.Message}}</p>
+            
+            <br>
+            <button class="btn-primary" onclick="history.back()">Try again</button>
+		</div>
+	</div>
+	</body>
+</html>

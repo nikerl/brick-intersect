@@ -17,12 +17,19 @@ const REBRICKABLE_API_BASE_URL = "https://rebrickable.com/api/v3/lego/"
 var REBRICKABLE_API_KEY string
 
 var resultTemplate *template.Template
+var errorTemplate *template.Template
 
 type set struct {
 	SetNum       string `json:"set_num"`
 	Name         string `json:"name"`
 	SetImgUrl    string `json:"set_img_url"`
 	BricklinkUrl string `json:"bricklink_url"`
+}
+
+type httpError struct {
+	StatusCode string `json:"status_code"`
+	Title      string `json:"title"`
+	Message    string `json:"message"`
 }
 
 var colorIdMap = make(map[string]int)
@@ -45,7 +52,8 @@ func initSecrets() {
 }
 
 func initTemplate() {
-	resultTemplate = template.Must(template.ParseFiles("static/query.html"))
+	resultTemplate = template.Must(template.ParseFiles("static/templates/query.html"))
+	errorTemplate = template.Must(template.ParseFiles("static/templates/error.html"))
 }
 
 func initializeColorMap() error {
@@ -74,7 +82,16 @@ func initializeColorMap() error {
 	return nil
 }
 
-func requestSetsContainingPiece(pieceId string, colorId int) []set {
+func reverseColorLookup(colorId int) string {
+	for name, id := range colorIdMap {
+		if id == colorId {
+			return name
+		}
+	}
+	return fmt.Sprintf("Unknown Color ID: %d", colorId)
+}
+
+func requestSetsContainingPiece(pieceId string, colorId int) ([]set, *httpError) {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%sparts/%s/colors/%d/sets/?page_size=10000&ordering=set_num", REBRICKABLE_API_BASE_URL, pieceId, colorId), nil)
@@ -83,14 +100,22 @@ func requestSetsContainingPiece(pieceId string, colorId int) []set {
 	respJson, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error fetching sets for piece %s and color %d: %v", pieceId, colorId, err)
-		return nil
+		return nil, &httpError{StatusCode: "500", Title: "Internal Server Error", Message: "An internal server error occurred."}
 	}
 	defer respJson.Body.Close()
 
 	body, err := io.ReadAll(respJson.Body)
 	if err != nil {
 		log.Printf("Error reading response body for piece %s and color %d: %v", pieceId, colorId, err)
-		return nil
+		return nil, &httpError{StatusCode: "500", Title: "Internal Server Error", Message: "An internal server error occurred."}
+	}
+
+	if respJson.StatusCode == 401 {
+		return nil, &httpError{StatusCode: "401", Title: "Unauthorized", Message: "It seems that your Rebrickable API key is invalid or missing. Please check your API key and try again."}
+	} else if respJson.StatusCode == 404 {
+		return nil, &httpError{StatusCode: "404", Title: "Not Found", Message: fmt.Sprint("Piece Num '", pieceId, "' in color '", reverseColorLookup(colorId), "' not found in the database.")}
+	} else if respJson.StatusCode != 200 {
+		return nil, &httpError{StatusCode: "500", Title: "Internal Server Error", Message: "An internal server error occurred."}
 	}
 
 	var resp struct {
@@ -106,7 +131,7 @@ func requestSetsContainingPiece(pieceId string, colorId int) []set {
 		sets[i].BricklinkUrl = fmt.Sprintf("https://www.bricklink.com/v2/catalog/catalogitem.page?S=%s", sets[i].SetNum)
 	}
 
-	return sets
+	return sets, nil
 }
 
 // Binary search to find if a setNum existsin in a list of sets
@@ -187,7 +212,11 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	var sets [][]set
 	for i := range piece_ids {
 		fmt.Printf("Piece ID: %s, Color: %s, Color ID: %d\n", piece_ids[i], colors[i], colorIdMap[colors[i]])
-		setsWithPiece := requestSetsContainingPiece(piece_ids[i], colorIdMap[colors[i]])
+		setsWithPiece, err := requestSetsContainingPiece(piece_ids[i], colorIdMap[colors[i]])
+		if err != nil {
+			errorTemplate.Execute(w, err)
+			return
+		}
 		sets = append(sets, setsWithPiece)
 	}
 
@@ -195,7 +224,6 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Intersection: %v\n", intersection)
 
 	resultTemplate.Execute(w, intersection)
-
 }
 
 func main() {
