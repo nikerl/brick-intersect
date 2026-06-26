@@ -4,11 +4,11 @@ Enter a list of Lego peices and their colors and get a list of all sets that con
 ## API key
 A Rebrickable API key is needed to use this program, [see docs](https://rebrickable.com/api/).
 
-The API key should be listed in `.env` file in the root of the repo as such:
+The program can fetch the API key from an `.env` file in the root of the repo as such:
 ```
 REBRICKABLE_API_KEY=<key>
 ```
-Or export it as an eviroment variable before running the program.
+But it is recomended to export it as an eviroment variable before running the program.
 
 ## Build and Run
 ### Natively:
@@ -20,5 +20,5 @@ go run main.go
 ### Docker:
 ```
 sudo docker build -t brick-intersect:latest .
-sudo docker run --rm -d --name=BrickIntersect -e REBRICKABLE_API_KEY=<key> -p 8090:8090 brick-intersect:latest
+sudo docker run -d --name=BrickIntersect -e REBRICKABLE_API_KEY=<key> -p 8090:8090 brick-intersect:latest
 ```
