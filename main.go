@@ -32,6 +32,11 @@ type httpError struct {
 	Message    string `json:"message"`
 }
 
+type resultPage struct {
+	Results []set `json:"results"`
+	Comment string `json:"comment,omitempty"`
+}
+
 var colorIdMap = make(map[string]int)
 
 func initSecrets() {
@@ -229,7 +234,12 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Intersection: %v\n", intersection)
 	}
 
-	resultTemplate.Execute(w, intersection)
+	if len(intersection) == 0 {
+		resultTemplate.Execute(w, resultPage{Results: []set{}, Comment: "No sets found that contain all specified pieces."})
+		return
+	}
+
+	resultTemplate.Execute(w, resultPage{Results: intersection, Comment: fmt.Sprintf("Found %d sets that contain all specified pieces.", len(intersection))})
 }
 
 func main() {
