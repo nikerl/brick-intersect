@@ -183,6 +183,11 @@ button:hover {
 	margin-bottom: 25px;
 }
 
+.home-link {
+	text-decoration: none;
+	color: inherit;
+}
+
 /* Results */
 
 .results-header {
