@@ -127,6 +127,10 @@ func requestSetsContainingPiece(pieceId string, colorId int) ([]set, *httpError)
 	}
 	sets := resp.Results
 
+	if len(sets) == 0 {
+		return nil, &httpError{StatusCode: "404", Title: "Not Found", Message: fmt.Sprint("Piece Num '", pieceId, "' in color '", reverseColorLookup(colorId), "' not found in any sets in the database.")}
+	}
+
 	for i := range sets {
 		sets[i].BricklinkUrl = fmt.Sprintf("https://www.bricklink.com/v2/catalog/catalogitem.page?S=%s", sets[i].SetNum)
 	}
@@ -155,12 +159,6 @@ func containsSetNum(sets []set, setNum string) bool {
 
 // Finds which sets appear in all provided set lists
 func setIntersection(superset [][]set) []set {
-	if len(superset) == 0 {
-		return nil
-	} else if len(superset) == 1 {
-		return superset[0]
-	}
-
 	// Find the shortest of the lists of sets
 	min_len := MAX_INT
 	min_len_index := 0
@@ -220,8 +218,16 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 		sets = append(sets, setsWithPiece)
 	}
 
-	intersection := setIntersection(sets)
-	fmt.Printf("Intersection: %v\n", intersection)
+	intersection := []set{}
+	if len(sets) == 0 {
+		errorTemplate.Execute(w, &httpError{StatusCode: "400", Title: "Bad Request", Message: "No valid piece IDs and colors were provided. Please check your input and try again."})
+		return
+	} else if len(sets) == 1 {
+		intersection = sets[0]
+	} else {
+		intersection = setIntersection(sets)
+		fmt.Printf("Intersection: %v\n", intersection)
+	}
 
 	resultTemplate.Execute(w, intersection)
 }
