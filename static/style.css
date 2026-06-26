@@ -177,6 +177,12 @@ button:hover {
 	flex-shrink: 0;
 }
 
+.error-image {
+	width: 65%;
+	border-radius: 6px;
+	margin-bottom: 25px;
+}
+
 /* Results */
 
 .results-header {
